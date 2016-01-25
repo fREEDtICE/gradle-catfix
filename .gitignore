@@ -1,0 +1,11 @@
+# ignore gradle files
+.gradle/
+build/
+
+gradle.properties
+local.properties
+
+# Intellij IDEA(Android Studio)
+out/
+.idea/
+*.iml
