@@ -41,6 +41,7 @@ buildscript {
   }
 
   dependencies {
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
     classpath 'org.ajoberstar:gradle-git:0.11.2'
 //        classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
   }
@@ -49,6 +50,8 @@ buildscript {
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'io.codearte.nexus-staging'
+
 
 
 repositories {
@@ -56,7 +59,7 @@ repositories {
 }
 
 group = 'com.github.freedtice'
-version = '0.1.0-SNAPSHOT'
+version = '0.1.0'
 
 sourceCompatibility = '1.6'
 
@@ -68,6 +71,12 @@ sourceSets {
   main {
     compileClasspath += configurations.provided
   }
+}
+
+nexusStaging {
+  username = project.getProperty('sonatype.username')
+  password = project.getProperty('sonatype.password')
+
 }
 
 dependencies {
