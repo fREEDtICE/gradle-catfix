@@ -15,7 +15,7 @@ buildscript {
     mavenLocal()
   }
   dependencies {
-    classpath 'com.github.freedtice:gradle-catfix:0.1.1'
+    classpath 'com.github.freedtice:gradle-catfix:0.1.2'
 }
 
 apply plugin: 'com.android.application'
