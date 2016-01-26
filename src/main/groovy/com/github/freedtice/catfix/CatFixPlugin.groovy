@@ -7,7 +7,6 @@ import com.github.freedtice.catfix.model.PatchConfiguration
 import com.github.freedtice.catfix.model.internal.DefaultPatchConfigurationImpl
 import com.github.freedtice.catfix.model.internal.FlavorPatchConfigurationImpl
 import com.github.freedtice.catfix.task.*
-import com.github.freedtice.catfix.utils.FileUtils
 import com.github.freedtice.catfix.utils.GradleVariantHelper
 import com.github.freedtice.catfix.utils.SdkHelper
 import javassist.*
@@ -88,7 +87,7 @@ public class CatFixPlugin implements Plugin<Project> {
       originJarTask.patchClasses = configuration.originalClassesDir
       originJarTask.dependsOn prepareTask
       originJarTask.onlyIf {
-        configuration.originalClassesDir.exists()
+        configuration.originalClassesDir.exists() && null != configuration.originalClassesDir.listFiles() && configuration.originalClassesDir.listFiles().length > 0
       }
 
       def jarTask = project.tasks.create("jarPatch${variant.name.capitalize()}", JarTask)
@@ -97,7 +96,7 @@ public class CatFixPlugin implements Plugin<Project> {
       jarTask.patchClasses = configuration.diffClassesDir
       jarTask.dependsOn originJarTask
       jarTask.onlyIf {
-        configuration.diffClassesDir.exists()
+        configuration.diffClassesDir.exists() && null != configuration.diffClassesDir.listFiles() && configuration.diffClassesDir.listFiles().length > 0
       }
 
       def dexTask = project.tasks.create("buildPatch${variant.name.capitalize()}", DexTask)
@@ -153,7 +152,6 @@ public class CatFixPlugin implements Plugin<Project> {
           configuration.diffJar.exists()
         }
       }
-
     }
 
     def patchTask = project.tasks.create("patch")
@@ -165,9 +163,9 @@ public class CatFixPlugin implements Plugin<Project> {
 
     def patchDebug = project.tasks.create("patchDebug")
     patchDebug.dependsOn {
-     project.tasks.findAll { task ->
-       task.name.startsWith('buildPatch') && task.name.endsWith('Debug')
-     }
+      project.tasks.findAll { task ->
+        task.name.startsWith('buildPatch') && task.name.endsWith('Debug')
+      }
     }
 
     def patchRelease = project.tasks.create("patchRelease")

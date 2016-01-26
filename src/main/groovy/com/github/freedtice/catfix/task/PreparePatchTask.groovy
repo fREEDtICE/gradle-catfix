@@ -77,6 +77,14 @@ class PreparePatchTask extends BaseTask {
     pool.appendSystemPath()
     pool.appendClassPath(SdkHelper.getAndroidRuntime(project).absolutePath)
     pool.appendClassPath(variantClassDir.absolutePath)
+    project.configurations.compile.each { File file ->
+      if (file.name.endsWith(".jar")) {
+        pool.appendClassPath(file.absolutePath)
+      }
+    }
+    SdkHelper.getProjectAARLibrary(project).each { File jar ->
+      pool.appendClassPath(jar.absolutePath)
+    }
 
     MappingReader reader = new MappingReader()
     if (configuration.variant.buildType.minifyEnabled) {

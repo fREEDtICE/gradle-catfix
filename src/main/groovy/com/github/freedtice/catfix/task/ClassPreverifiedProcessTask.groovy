@@ -24,6 +24,15 @@ class ClassPreverifiedProcessTask extends BaseTask {
     pool.appendSystemPath()
     pool.appendClassPath(classesDir.absolutePath)
     pool.appendClassPath(SdkHelper.getAndroidRuntime(project).absolutePath)
+    project.configurations.compile.each { File file ->
+      if (file.name.endsWith(".jar")) {
+        pool.appendClassPath(file.absolutePath)
+      }
+    }
+    SdkHelper.getProjectAARLibrary(project).each { File jar ->
+      pool.appendClassPath(jar.absolutePath)
+    }
+
     FileTree classTree = project.fileTree(dir: classesDir.absolutePath)
     classTree.include '**/*.class'
 
