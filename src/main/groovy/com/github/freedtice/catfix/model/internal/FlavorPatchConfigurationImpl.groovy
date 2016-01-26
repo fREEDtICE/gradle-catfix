@@ -19,7 +19,7 @@ class FlavorPatchConfigurationImpl extends AbsPatchConfiguration {
   @Override
   File getVersionDir() {
     if (null == verDir) {
-      verDir = new File(getReleaseRecDir(), "${flavor.versionName ?: project.android.defaultConfig.versionName}/${flavor.name}")
+      verDir = new File(getReleaseRecDir(), "${flavor.versionName ?: project.android.defaultConfig.versionName}/${flavor.name}/${variant.buildType.name}")
     }
     return verDir
   }

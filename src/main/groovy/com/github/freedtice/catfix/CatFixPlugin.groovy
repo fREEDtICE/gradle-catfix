@@ -100,7 +100,7 @@ public class CatFixPlugin implements Plugin<Project> {
         configuration.diffClassesDir.exists()
       }
 
-      def dexTask = project.tasks.create("patch${variant.name.capitalize()}", DexTask)
+      def dexTask = project.tasks.create("buildPatch${variant.name.capitalize()}", DexTask)
       dexTask.configuration = configuration
       dexTask.dex = configuration.diffDexFile
 
@@ -159,7 +159,21 @@ public class CatFixPlugin implements Plugin<Project> {
     def patchTask = project.tasks.create("patch")
     patchTask.dependsOn {
       project.tasks.findAll { task ->
-        task.name.startsWith('patch') && task.name.length() > 5
+        task.name.startsWith('buildPatch')
+      }
+    }
+
+    def patchDebug = project.tasks.create("patchDebug")
+    patchDebug.dependsOn {
+     project.tasks.findAll { task ->
+       task.name.startsWith('buildPatch') && task.name.endsWith('Debug')
+     }
+    }
+
+    def patchRelease = project.tasks.create("patchRelease")
+    patchRelease.dependsOn {
+      project.tasks.findAll { task ->
+        task.name.startsWith('buildPatch') && task.name.endsWith('Release')
       }
     }
   }
