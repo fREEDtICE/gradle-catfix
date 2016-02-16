@@ -37,7 +37,7 @@ catfix {
 
 if you are using Proguard, add the following to your proguard-rules.pro:
 ```java
--keep class me.soandky.catfix.android.ClassPreverifyPreventor
+-keep class com.github.freedtice.catfix.android.ClassPreverifyPreventor
 ```
 
 ### How to use it

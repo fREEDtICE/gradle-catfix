@@ -38,7 +38,7 @@ catfix {
 
 如果使用了Proguard, 在proguard-rules.pro中添加:
 ```java
--keep class me.soandky.catfix.android.ClassPreverifyPreventor
+-keep class com.github.freedtice.catfix.android.ClassPreverifyPreventor
 ```
 
 ### 使用方法
