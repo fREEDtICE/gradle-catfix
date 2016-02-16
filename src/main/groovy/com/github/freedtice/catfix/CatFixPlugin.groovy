@@ -8,6 +8,7 @@ import com.github.freedtice.catfix.model.internal.DefaultPatchConfigurationImpl
 import com.github.freedtice.catfix.model.internal.FlavorPatchConfigurationImpl
 import com.github.freedtice.catfix.task.*
 import com.github.freedtice.catfix.utils.GradleVariantHelper
+import com.github.freedtice.catfix.utils.LoggerUtil
 import com.github.freedtice.catfix.utils.SdkHelper
 import javassist.*
 import org.gradle.api.GradleException
@@ -27,6 +28,8 @@ public class CatFixPlugin implements Plugin<Project> {
   @Override
   void apply(Project project) {
     this.project = project
+
+    LoggerUtil.init(project)
 
     pluginExtension = project.extensions.create('catfix', PluginExtension)
 
@@ -106,6 +109,7 @@ public class CatFixPlugin implements Plugin<Project> {
       if (variant.buildType.minifyEnabled) {
         ProGuardTask proGuardTask = project.tasks.create("proguardPatch${variant.name.capitalize()}", ProGuardTask)
         variant.buildType.proguardFiles.each { File f ->
+          LoggerUtil.i("proguard files --> ${f}")
           proGuardTask.configuration(f)
         }
 
@@ -116,11 +120,13 @@ public class CatFixPlugin implements Plugin<Project> {
         proGuardTask.libraryjars(SdkHelper.getAndroidRuntime(project))
 
         SdkHelper.getProjectAARLibrary(project).each { File jar ->
+          LoggerUtil.i("aar libraries --> ${jar}")
           proGuardTask.libraryjars(jar)
         }
 
         project.configurations.compile.each { File file ->
           if (file.name.endsWith(".jar")) {
+            LoggerUtil.i("compile libraries --> ${file}")
             proGuardTask.libraryjars(file)
           }
         }

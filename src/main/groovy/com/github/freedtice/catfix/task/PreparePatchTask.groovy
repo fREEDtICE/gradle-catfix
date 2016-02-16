@@ -2,6 +2,7 @@ package com.github.freedtice.catfix.task
 
 import com.github.freedtice.catfix.utils.CryptoUtil
 import com.github.freedtice.catfix.utils.FileUtils
+import com.github.freedtice.catfix.utils.LoggerUtil
 import com.github.freedtice.catfix.utils.MappingReader
 import com.github.freedtice.catfix.utils.SdkHelper
 import com.google.common.collect.Lists
@@ -73,12 +74,15 @@ class PreparePatchTask extends BaseTask {
       return
     }
 
+    LoggerUtil.i("find changed files are: ${changedFileMap}")
+
     ClassPool pool = new ClassPool()
     pool.appendSystemPath()
     pool.appendClassPath(SdkHelper.getAndroidRuntime(project).absolutePath)
     pool.appendClassPath(variantClassDir.absolutePath)
     project.configurations.compile.each { File file ->
       if (file.name.endsWith(".jar")) {
+        LoggerUtil.i("add jar to class path --- > ${file}")
         pool.appendClassPath(file.absolutePath)
       }
     }
@@ -100,7 +104,6 @@ class PreparePatchTask extends BaseTask {
     CtMethod method = createPatchMethod(LazyAndroid)
 
     CtConstructor constructor = LazyAndroid.getConstructors()[0]
-
     constructor.setBody("{try{loadPatchClasses();}catch(Throwable ignore){}}")
 
     changedFileMap.entrySet().each { entry ->
@@ -152,13 +155,13 @@ class PreparePatchTask extends BaseTask {
   def collectionAllRefClass(Object md5, MappingReader reader, ClassPool pool, CtClass clazz, List collection) {
     clazz.getRefClasses().each { String name ->
       if (md5.containsKey(toPathKey(name)) && !collection.contains(name) && reader.isShrink(name)) {
-        project.logger.debug("add ref class ${name}")
+        LoggerUtil.i("add ref class ${name}")
         collection.add(name)
         try {
           CtClass newClazz = pool.get(name)
           collectionAllRefClass(md5, reader, pool, newClazz, collection)
         } catch (Throwable throwable) {
-          project.logger.error("error when collectionAllRefClass ${name}", throwable)
+          LoggerUtil.e("error when collectionAllRefClass ${name}", throwable)
         }
       }
     }
@@ -177,20 +180,20 @@ class PreparePatchTask extends BaseTask {
         CtClass clazz = pool.get(className)
         collectionAllRefClass(md5s, reader, pool, clazz, allClazz)
       } catch (Throwable throwable) {
-        project.logger.error("error when load class ${className}", throwable)
+        LoggerUtil.e("error when load class ${className}", throwable)
       }
     }
 
     allClazz.each { String className ->
       String key = toPathKey(className)
       if (!changedFileMap.containsKey(key)) {
-        project.logger.debug("found changed class ${key}")
+        LoggerUtil.i("found changed class ${key}")
         File file = new File(variantClassDir.absolutePath, key)
         if (file.exists()) {
           String md5 = CryptoUtil.generateMD5(file)
           changedFileMap.put(key, file)
           md5Map.put(key, md5)
-          project.logger.debug("add class ${key} - ${file} to changed map")
+          LoggerUtil.i("add class ${key} - ${file} to changed map")
         }
       }
     }

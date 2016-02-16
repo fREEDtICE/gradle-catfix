@@ -71,7 +71,6 @@ abstract class AbsPatchConfiguration implements PatchConfiguration {
       patchVersion = new File(getPatchBaseDir(), String.valueOf(extension.patchVersion))
     }
     return patchVersion
-
   }
 
   @Override

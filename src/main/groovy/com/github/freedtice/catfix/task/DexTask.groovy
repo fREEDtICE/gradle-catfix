@@ -1,5 +1,6 @@
 package com.github.freedtice.catfix.task
 
+import com.github.freedtice.catfix.utils.LoggerUtil
 import com.github.freedtice.catfix.utils.SdkHelper
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
@@ -18,7 +19,7 @@ class DexTask extends BaseTask {
   @TaskAction
   public void buildDex() {
     def dx = project.file("${SdkHelper.getBuildToolFolder(project)}/dx")
-    project.logger.debug("${dx} --dex --output=${dex.absolutePath} --input-list=${toDexJar.absolutePath}")
+    LoggerUtil.d("${dx} --dex --output=${dex.absolutePath} --input-list=${toDexJar.absolutePath}")
     project.exec {
       commandLine dx, '--dex', "--output=${dex.absolutePath}", toDexJar.absolutePath
     }

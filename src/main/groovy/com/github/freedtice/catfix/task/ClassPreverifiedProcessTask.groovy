@@ -1,6 +1,7 @@
 package com.github.freedtice.catfix.task
 
 import com.github.freedtice.catfix.utils.FileUtils
+import com.github.freedtice.catfix.utils.LoggerUtil
 import com.github.freedtice.catfix.utils.SdkHelper
 import javassist.*
 import org.gradle.api.file.FileTree
@@ -45,9 +46,9 @@ class ClassPreverifiedProcessTask extends BaseTask {
       def className = key.substring(0, key.indexOf('.')).replace('/', '.')
       // skip inner class, retrolamda class and R
       if (key.indexOf('$') != -1 || className.equals(preverifyClassName) || "R.class".equals(file.name)) {
-        project.logger.debug("do not process internal or lamda class:${key}")
+        LoggerUtil.d("do not process internal or lamda class:${key}")
       } else {
-        project.logger.debug("process class ${className}, add class preverify preventor to constructors")
+        LoggerUtil.d("process class ${className}, add class preverify preventor to constructors")
         try {
           CtClass toProcess = pool.get(className)
           // application class is start class, can not be patched
@@ -60,7 +61,7 @@ class ClassPreverifiedProcessTask extends BaseTask {
             toProcess.writeFile(destDir.absolutePath)
           }
         } catch (Throwable throwable) {
-          project.logger.error("error when process class ${className}", throwable)
+          LoggerUtil.e("error when process class ${className}", throwable)
         }
       }
     }
